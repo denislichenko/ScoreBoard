@@ -22,9 +22,13 @@ namespace ScoreBoard.Tests
 
             service.StartGame(homeTeam.Name, awayTeam.Name);
 
+            var actualGame = games.Last(); 
+
             Assert.Equal(gamesCount + 1, games.Count);
-            Assert.Equal(homeTeam, games.Last().HomeTeam);
-            Assert.Equal(awayTeam, games.Last().AwayTeam);
+            Assert.Equal(homeTeam.Name, actualGame.HomeTeam.Name);
+            Assert.Equal(awayTeam.Name, actualGame.AwayTeam.Name);
+            Assert.Equal(homeTeam.Score, actualGame.HomeTeam.Score);
+            Assert.Equal(awayTeam.Score, actualGame.AwayTeam.Score);
         }
 
         [Fact]
@@ -39,8 +43,8 @@ namespace ScoreBoard.Tests
             service.StartGame(homeTeam.Name, awayTeam.Name);
 
             Assert.Equal(gamesCount + 1, games.Count);
-            Assert.Equal(homeTeam, games.Last().HomeTeam);
-            Assert.Equal(awayTeam, games.Last().AwayTeam);
+            Assert.Equal(homeTeam.Name, games.Last().HomeTeam.Name);
+            Assert.Equal(awayTeam.Name, games.Last().AwayTeam.Name);
 
             service.FinishGame(homeTeam.Name, awayTeam.Name);
 
@@ -50,26 +54,44 @@ namespace ScoreBoard.Tests
         }
 
         [Fact]
+        public void FinishNotStartedTest()
+        {
+            var service = new GameService();
+            var homeTeam = new Team("Test5", 0);
+            var awayTeam = new Team("Test6", 0);
+
+            var ex = Assert.Throws<ArgumentException>(() => service.FinishGame(homeTeam.Name, awayTeam.Name));
+            Assert.Equal("Game not found", ex.Message); 
+        }
+
+        [Fact]
         public void UpdateScoreTest()
         {
             var service = new GameService();
             var games = ApplicationData.Games;
             var gamesCount = games.Count;
-            var homeTeam = new Team("Test5", 0);
-            var awayTeam = new Team("Test6", 0);
+            var homeTeam = new Team("Test5", 5);
+            var awayTeam = new Team("Test6", 3);
 
             service.StartGame(homeTeam.Name, awayTeam.Name);
-
-            homeTeam.Score = 5;
-            awayTeam.Score = 3; 
-
             service.UpdateScore(homeTeam, awayTeam);
 
-            var resultGame = games.First(x => x.HomeTeam.Name == homeTeam.Name &&
+            var actualGame = games.First(x => x.HomeTeam.Name == homeTeam.Name &&
                                               x.AwayTeam.Name == awayTeam.Name);
 
-            Assert.Equal(5, resultGame.HomeTeam.Score);
-            Assert.Equal(3, resultGame.AwayTeam.Score);
+            Assert.Equal(5, actualGame.HomeTeam.Score);
+            Assert.Equal(3, actualGame.AwayTeam.Score);
+        }
+
+        [Fact]
+        public void UpdateNotExistedTest()
+        {
+            var service = new GameService();
+            var homeTeam = new Team("Test7", 5);
+            var awayTeam = new Team("Test8", 3);
+
+            var ex = Assert.Throws<ArgumentException>(() => service.UpdateScore(homeTeam, awayTeam));
+            Assert.Equal("Game not found", ex.Message);
         }
 
         [Fact]
@@ -79,8 +101,7 @@ namespace ScoreBoard.Tests
             var games = ApplicationData.Games;
             var expectedResult = ApplicationData.Games.OrderBy(x => x.HomeTeam.Score + x.AwayTeam.Score)
                                                 .ThenBy(x => x.AddedTime)
-                                                .Select(x => $"{x.HomeTeam.Name} {x.HomeTeam.Score} - {x.AwayTeam.Name} {x.AwayTeam.Score}")
-                                                .ToList();
+                                                .Select(x => $"{x.HomeTeam.Name} {x.HomeTeam.Score} - {x.AwayTeam.Name} {x.AwayTeam.Score}");
 
             var actualResult = service.GetSummary();
 
