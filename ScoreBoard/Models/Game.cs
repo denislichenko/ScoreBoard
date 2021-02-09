@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace ScoreBoard.Models
 {
-    class Game
+    public class Game
     {
-        public string HomeTeam { get; set; }
-        public string AwayTeam { get; set; }
+        public Team HomeTeam { get; set; }
+        public Team AwayTeam { get; set; }
 
-        public Tuple<int, int> Score { get; set; }
+        public DateTime AddedTime { get; set; }
 
-        public Game()
+        public Game(string homeTeam, string awayTeam, int homeScore = 0, int awayScore = 0)
         {
-            Score = new Tuple<int, int>(0, 0); 
+            HomeTeam = new Team(homeTeam, homeScore);
+            AwayTeam = new Team(awayTeam, awayScore);
+            AddedTime = DateTime.Now; 
         }
     }
 }
