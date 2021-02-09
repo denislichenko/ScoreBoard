@@ -8,8 +8,7 @@ namespace ScoreBoard.Models
     {
         public string Name { get; set; }
         public int Score { get; set; }
-
-        public Team() { }
+        
         public Team(string name, int score)
         {
             Name = name;

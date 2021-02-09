@@ -17,22 +17,14 @@ namespace ScoreBoard.Services
 
         public void FinishGame(string homeTeam, string awayTeam)
         {
-            var gameToRemove = ApplicationData.Games.Find(x => x.HomeTeam.Name == homeTeam &&
-                                                               x.AwayTeam.Name == awayTeam);
-
-            if (gameToRemove == null)
-                throw new ArgumentException($"Game not found");
+            var gameToRemove = FindGame(homeTeam, awayTeam);
 
             ApplicationData.Games.Remove(gameToRemove);
         }
 
         public void UpdateScore(Team homeTeam, Team awayTeam)
         {
-            var gameToUpdate = ApplicationData.Games.Find(x => x.HomeTeam.Name == homeTeam.Name &&
-                                                               x.AwayTeam.Name == awayTeam.Name);
-
-            if (gameToUpdate == null)
-                throw new ArgumentException($"Game not found");
+            var gameToUpdate = FindGame(homeTeam.Name, awayTeam.Name);
 
             gameToUpdate.HomeTeam.Score = homeTeam.Score;
             gameToUpdate.AwayTeam.Score = awayTeam.Score;
@@ -45,5 +37,16 @@ namespace ScoreBoard.Services
                 .ThenByDescending(x => x.AddedTime)
                 .Select(x => $"{x.HomeTeam.Name} {x.HomeTeam.Score} - {x.AwayTeam.Name} {x.AwayTeam.Score}");
         }
+
+        private Game FindGame(string homeTeam, string awayTeam)
+        {
+            var gameToRemove = ApplicationData.Games.Find(x => x.HomeTeam.Name == homeTeam &&
+                                                               x.AwayTeam.Name == awayTeam);
+
+            if (gameToRemove == null)
+                throw new ArgumentException($"Game not found");
+
+            return gameToRemove; 
+        } 
     }
 }
