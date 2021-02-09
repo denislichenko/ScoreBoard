@@ -99,8 +99,9 @@ namespace ScoreBoard.Tests
         {
             var service = new GameService();
             var games = ApplicationData.Games;
-            var expectedResult = ApplicationData.Games.OrderBy(x => x.HomeTeam.Score + x.AwayTeam.Score)
-                                                .ThenBy(x => x.AddedTime)
+            var expectedResult = ApplicationData.Games
+                                                .OrderByDescending(x => x.HomeTeam.Score + x.AwayTeam.Score)
+                                                .ThenByDescending(x => x.AddedTime)
                                                 .Select(x => $"{x.HomeTeam.Name} {x.HomeTeam.Score} - {x.AwayTeam.Name} {x.AwayTeam.Score}");
 
             var actualResult = service.GetSummary();

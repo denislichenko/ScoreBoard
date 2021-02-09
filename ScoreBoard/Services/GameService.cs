@@ -41,8 +41,8 @@ namespace ScoreBoard.Services
         public IEnumerable<string> GetSummary()
         {
             return ApplicationData.Games
-                .OrderBy(x => x.HomeTeam.Score + x.AwayTeam.Score)
-                .ThenBy(x => x.AddedTime)
+                .OrderByDescending(x => x.HomeTeam.Score + x.AwayTeam.Score)
+                .ThenByDescending(x => x.AddedTime)
                 .Select(x => $"{x.HomeTeam.Name} {x.HomeTeam.Score} - {x.AwayTeam.Name} {x.AwayTeam.Score}");
         }
     }
